@@ -9,19 +9,29 @@
 
 const { QueryTypes } = require('sequelize');
 const Joi = require('joi');
+const NodeCache = require('node-cache');
 const db = require('../models');
+
+const myCache = new NodeCache({ stdTTL: 100, checkperiod: 3600 });
 
 // get all filters
 exports.filters = async (req, res) => {
-  const query = 'SELECT id as value, signal as label,description  FROM report.signals';
+  let value = myCache.get('filters');
   let result = [];
-  try {
-    result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-  } catch (err) {
-    res.status(500).send({
-      message:	err.message || 'Some SQL error occurred',
-    });
-    return;
+  if (value === undefined) {
+    // handle miss!
+    const query = 'SELECT id as value, signal as label,description  FROM report.signals';
+    try {
+      result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    } catch (err) {
+      res.status(500).send({
+        message:	err.message || 'Some SQL error occurred',
+      });
+      return;
+    }
+    myCache.set('filters', result);
+  } else {
+    result = value;
   }
 
   res.json(result);
@@ -29,16 +39,23 @@ exports.filters = async (req, res) => {
 
 // get table default columns
 exports.tableColumns = async (req, res) => {
-  const query = `SELECT labels as id, REPLACE(INITCAP(labels), '_', ' ') as Label, True as is_active
-						FROM (SELECT jsonb_object_keys(event) as labels FROM (SELECT event FROM report.events LIMIT 1) t) v`;
+  let value = myCache.get('tableColumns');
   let result = [];
-  try {
-    result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-  } catch (err) {
-    res.status(500).send({
-      message:	err.message || 'Some SQL error occurred',
-    });
-    return;
+  if (value === undefined) {
+    // handle miss!
+    const query = `SELECT labels as id, REPLACE(INITCAP(labels), '_', ' ') as Label, True as is_active
+						FROM (SELECT jsonb_object_keys(event) as labels FROM (SELECT event FROM report.events LIMIT 1) t) v`;
+    try {
+      result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    } catch (err) {
+      res.status(500).send({
+        message:	err.message || 'Some SQL error occurred',
+      });
+      return;
+    }
+    myCache.set('tableColumns', result);
+  } else {
+    result = value;
   }
 
   res.json(result);
@@ -65,57 +82,63 @@ exports.charts = async (req, res) => {
     return;
   }
 
-  // set default values
-  let defaults = { search: '', filter: '', time_shift: 0 };
-  Object.keys(defaults).forEach(key => { req.query[key] = req.query[key] || defaults[key]; });
+  const cacheKey = `${req.username}|${req.originalUrl}`;
 
-  let {
-    search, filter, time_type, time_shift: timeUTCshift, period_min, period_max,
-  } = req.query;
+  let value = myCache.get(cacheKey);
+  if (value === undefined) {
+    // handle miss!
 
-  const dat1 = parseInt(new Date(period_min).getTime() / 1000.0, 10);
-  const dat2 = parseInt(new Date(period_max).getTime() / 1000.0, 10);
+    // set default values
+    let defaults = { search: '', filter: '', time_shift: 0 };
+    Object.keys(defaults).forEach(key => { req.query[key] = req.query[key] || defaults[key]; });
 
-  if (dat1 > dat2) {
-    res.status(400).json({
-      status: 'error',
-      message: [
-        {
-          message: '"period_min" cant be bigger then "period_max"',
-          path: ['period_min', 'period_max'],
-        }],
-    });
-    return;
-  }
+    let {
+      search, filter, time_type, time_shift: timeUTCshift, period_min, period_max,
+    } = req.query;
 
-  let mode = 'day';
-  if (dat2 - dat1 <= 86400) {
-    mode = 'hour';
-  }
+    const dat1 = parseInt(new Date(period_min).getTime() / 1000.0, 10);
+    const dat2 = parseInt(new Date(period_max).getTime() / 1000.0, 10);
 
-  const sqlQuery = `SELECT id as value, signal as label, description FROM report.signals where id in (${filter})`;
-  let selectedFilters = [];
-  if (filter !== '') {
-    try {
-      selectedFilters = await db.sequelize.query(sqlQuery, { type: QueryTypes.SELECT });
-    } catch (err) {
-      res.status(500).send({
-        message:	err.message || 'Some SQL error occurred',
+    if (dat1 > dat2) {
+      res.status(400).json({
+        status: 'error',
+        message: [
+          {
+            message: '"period_min" cant be bigger then "period_max"',
+            path: ['period_min', 'period_max'],
+          }],
       });
       return;
     }
-  }
 
-  const filersStr = selectedFilters.reduce((accumulator, currentValue) => `${accumulator + (accumulator.length > 0 ? ', ' : '')}"${currentValue.label}"`, '');
+    let mode = 'day';
+    if (dat2 - dat1 <= 86400) {
+      mode = 'hour';
+    }
 
-  let timeTypeUTCshift = '';
-  if (time_type === 'local') {
-    if (timeUTCshift !== 0) timeTypeUTCshift = ` + INTERVAL '${timeUTCshift} minutes'`;
-  } else {
-    timeUTCshift = 0;
-  }
+    const sqlQuery = `SELECT id as value, signal as label, description FROM report.signals where id in (${filter})`;
+    let selectedFilters = [];
+    if (filter !== '') {
+      try {
+        selectedFilters = await db.sequelize.query(sqlQuery, { type: QueryTypes.SELECT });
+      } catch (err) {
+        res.status(500).send({
+          message:	err.message || 'Some SQL error occurred',
+        });
+        return;
+      }
+    }
 
-  let viewQuery = `(
+    const filersStr = selectedFilters.reduce((accumulator, currentValue) => `${accumulator + (accumulator.length > 0 ? ', ' : '')}"${currentValue.label}"`, '');
+
+    let timeTypeUTCshift = '';
+    if (time_type === 'local') {
+      if (timeUTCshift !== 0) timeTypeUTCshift = ` + INTERVAL '${timeUTCshift} minutes'`;
+    } else {
+      timeUTCshift = 0;
+    }
+
+    let viewQuery = `(
 	SELECT ip,
 		   email,
 		   emailip,
@@ -141,18 +164,18 @@ exports.charts = async (req, res) => {
 	  AND date_trunc('hour', date) <= '${period_min}'::timestamp ${timeTypeUTCshift}
 	  AND date_trunc('hour', date) >= '${period_max}'::timestamp ${timeTypeUTCshift}`;
 
-  if (filersStr !== '') {
-    viewQuery += `
+    if (filersStr !== '') {
+      viewQuery += `
 		AND '{ ${filersStr} }' && signals_array -- filter for signals
 		`;
-  }
+    }
 
-  viewQuery += `
+    viewQuery += `
 	  AND (request_id LIKE '%${search}%' OR  request_device_id LIKE '%${search}%' OR events.request_email LIKE '%${search}%' OR request_ip  LIKE '%${search}%')
     ) as temp`;
 
-  // for hour
-  const sqlHourQuery = `SELECT a.date, total, users, alerts, filtered_total, filtered_users, filtered_alerts
+    // for hour
+    const sqlHourQuery = `SELECT a.date, total, users, alerts, filtered_total, filtered_users, filtered_alerts
 				FROM (SELECT date_trunc as date, sum(total) as total, sum(users) as users, sum(alerts) as alerts
 					  FROM (SELECT date_trunc, total, users, alerts
 							FROM report.daily
@@ -179,8 +202,8 @@ exports.charts = async (req, res) => {
 									FROM ${viewQuery}
                     GROUP BY date_trunc('hour', date)) t ON a.date = t.date`;
 
-  // for days
-  const sqlDaysQuery = `SELECT a.date, total, users, alerts, filtered_total, filtered_users, filtered_alerts
+    // for days
+    const sqlDaysQuery = `SELECT a.date, total, users, alerts, filtered_total, filtered_users, filtered_alerts
 				FROM (SELECT date_trunc::Date as date, sum(total) as total, sum(users) as users, sum(alerts) as alerts
 					  FROM (SELECT date_trunc, total, users, alerts
 							FROM report.daily
@@ -207,67 +230,70 @@ exports.charts = async (req, res) => {
 									FROM ${viewQuery}
                     GROUP BY date_trunc('hour', date)::date) t ON a.date = t.date`;
 
-  const query = (mode === 'hour' ? sqlHourQuery : sqlDaysQuery);
-  let response = [];
-  try {
-    response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-  } catch (err) {
-    res.status(500).send({
-      message:	err.message || 'Some SQL error occurred',
-    });
-    return;
+    const query = (mode === 'hour' ? sqlHourQuery : sqlDaysQuery);
+    let response = [];
+    try {
+      response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    } catch (err) {
+      res.status(500).send({
+        message:	err.message || 'Some SQL error occurred',
+      });
+      return;
+    }
+
+    const result = {
+      events: {
+        labels: [], total: [], filtered: [], timeUnit: mode,
+      },
+      users: {
+        labels: [], total: [], filtered: [], timeUnit: mode,
+      },
+      alerts: {
+        labels: [], total: [], filtered: [], timeUnit: mode,
+      },
+    };
+
+    // 90 => 1 30, -90 => 1 30
+    const hoursShift = Math.abs(parseInt(timeUTCshift / 60.0, 10));
+    const minsShift = parseInt(Math.abs(timeUTCshift) - hoursShift * 60, 10);
+
+    for (const el of response) {
+      let label = el.date;
+      let dat1 = el.date;
+
+      if (timeUTCshift !== 0) {
+        if (mode !== 'hour') {
+          const arr = label.split(/[-\s:]/);
+
+          // new Date(year, month, date, hours, minutes, seconds
+          dat1 = new Date(+arr[0], +arr[1] - 1, +arr[2], +arr[3] || hoursShift, +arr[4] || minsShift, +arr[5] || 0);
+        }
+
+        const ts = dat1.getTime() + timeUTCshift * 60 * 1000;
+        const dat2 = new Date();
+        dat2.setTime(ts);
+
+        label = dat2.toISOString().replace('T', ' ').split('.')[0];
+        if (mode !== 'hour') label = label.split(' ')[0];
+      } else if (mode === 'hour') label = el.date.toISOString().replace('T', ' ').split('.')[0];
+
+      result.events.labels.push(label);
+      result.events.total.push(Number(el.total || 0));
+      result.events.filtered.push(Number(el.filtered_total || 0));
+
+      result.users.labels.push(label);
+      result.users.total.push(Number(el.users || 0));
+      result.users.filtered.push(Number(el.filtered_users || 0));
+
+      result.alerts.labels.push(label);
+      result.alerts.total.push(Number(el.alerts || 0));
+      result.alerts.filtered.push(Number(el.filtered_alerts || 0));
+    }
+    myCache.set(cacheKey, result);
+    res.json(result);
+  } else {
+    res.json(value);
   }
-
-  const result = {
-    events: {
-      labels: [], total: [], filtered: [], timeUnit: mode,
-    },
-    users: {
-      labels: [], total: [], filtered: [], timeUnit: mode,
-    },
-    alerts: {
-      labels: [], total: [], filtered: [], timeUnit: mode,
-    },
-  };
-
-  // 90 => 1 30, -90 => 1 30
-  const hoursShift = Math.abs(parseInt(timeUTCshift / 60.0, 10));
-  const minsShift = parseInt(Math.abs(timeUTCshift) - hoursShift * 60, 10);
-
-  for (const el of response) {
-    let label = el.date;
-    let dat1 = el.date;
-
-    if (timeUTCshift !== 0) {
-      if (mode !== 'hour') {
-        const arr = label.split(/[-\s:]/);
-
-        // new Date(year, month, date, hours, minutes, seconds
-        dat1 = new Date(+arr[0], +arr[1] - 1, +arr[2], +arr[3] || hoursShift, +arr[4] || minsShift, +arr[5] || 0);
-      }
-
-      const ts = dat1.getTime() + timeUTCshift * 60 * 1000;
-      const dat2 = new Date();
-      dat2.setTime(ts);
-
-      label = dat2.toISOString().replace('T', ' ').split('.')[0];
-      if (mode !== 'hour') label = label.split(' ')[0];
-    } else if (mode === 'hour') label = el.date.toISOString().replace('T', ' ').split('.')[0];
-
-    result.events.labels.push(label);
-    result.events.total.push(Number(el.total || 0));
-    result.events.filtered.push(Number(el.filtered_total || 0));
-
-    result.users.labels.push(label);
-    result.users.total.push(Number(el.users || 0));
-    result.users.filtered.push(Number(el.filtered_users || 0));
-
-    result.alerts.labels.push(label);
-    result.alerts.total.push(Number(el.alerts || 0));
-    result.alerts.filtered.push(Number(el.filtered_alerts || 0));
-  }
-
-  res.json(result);
 };
 
 // get events
@@ -293,134 +319,144 @@ exports.events = async (req, res) => {
     return;
   }
 
-  // set default values
-  let defaults = {
-    search: '', filter: '', time_shift: 0, offset: 0, sort: '',
-  };
-  Object.keys(defaults).forEach(key => { req.query[key] = req.query[key] || defaults[key]; });
+  const cacheKey = `${req.username}|${req.originalUrl}`;
 
-  let {
-    search, filter, time_type, time_shift: timeUTCshift, period_min, period_max, offset, sort: sortBy,
-  } = req.query;
+  let value = myCache.get(cacheKey);
+  if (value === undefined) {
+    // handle miss!
 
-  const dat1 = parseInt(new Date(period_min).getTime() / 1000.0, 10);
-  const dat2 = parseInt(new Date(period_max).getTime() / 1000.0, 10);
+    // set default values
+    let defaults = {
+      search: '', filter: '', time_shift: 0, offset: 0, sort: '',
+    };
+    Object.keys(defaults).forEach(key => { req.query[key] = req.query[key] || defaults[key]; });
 
-  if (dat1 > dat2) {
-    res.status(400).json({
-      status: 'error',
-      message: [
-        {
-          message: '"period_min" cant be bigger then "period_max"',
-          path: ['period_min', 'period_max'],
-        }],
-    });
-    return;
-  }
+    let {
+      search, filter, time_type, time_shift: timeUTCshift, period_min, period_max, offset, sort: sortBy,
+    } = req.query;
 
-  const sqlQuery = `SELECT id as value, signal as label, description FROM report.signals where id in (${filter})`;
-  let selectedFilters = [];
-  if (filter !== '') {
-    try {
-      selectedFilters = await db.sequelize.query(sqlQuery, { type: QueryTypes.SELECT });
-    } catch (err) {
-      res.status(500).send({
-        message:	err.message || 'Some SQL error occurred',
+    const dat1 = parseInt(new Date(period_min).getTime() / 1000.0, 10);
+    const dat2 = parseInt(new Date(period_max).getTime() / 1000.0, 10);
+
+    if (dat1 > dat2) {
+      res.status(400).json({
+        status: 'error',
+        message: [
+          {
+            message: '"period_min" cant be bigger then "period_max"',
+            path: ['period_min', 'period_max'],
+          }],
       });
       return;
     }
-  }
 
-  const filersStr = selectedFilters.reduce((accumulator, currentValue) => `${accumulator + (accumulator.length > 0 ? ', ' : '')}"${currentValue.label}"`, '');
+    const sqlQuery = `SELECT id as value, signal as label, description FROM report.signals where id in (${filter})`;
+    let selectedFilters = [];
+    if (filter !== '') {
+      try {
+        selectedFilters = await db.sequelize.query(sqlQuery, { type: QueryTypes.SELECT });
+      } catch (err) {
+        res.status(500).send({
+          message:	err.message || 'Some SQL error occurred',
+        });
+        return;
+      }
+    }
 
-  let timeTypeUTCshift = '';
-  if (time_type === 'local') {
-    if (timeUTCshift !== 0) timeTypeUTCshift = ` + INTERVAL '${timeUTCshift} minutes'`;
-  } else {
-    timeUTCshift = 0;
-  }
+    const filersStr = selectedFilters.reduce((accumulator, currentValue) => `${accumulator + (accumulator.length > 0 ? ', ' : '')}"${currentValue.label}"`, '');
 
-  // chumk size
-  const limit = 50;
+    let timeTypeUTCshift = '';
+    if (time_type === 'local') {
+      if (timeUTCshift !== 0) timeTypeUTCshift = ` + INTERVAL '${timeUTCshift} minutes'`;
+    } else {
+      timeUTCshift = 0;
+    }
 
-  // select one more element for investigate: is we have more data?
-  const biggerThenLimit = limit + 1;
+    // chumk size
+    const limit = 50;
 
-  let query = `SELECT event
+    // select one more element for investigate: is we have more data?
+    const biggerThenLimit = limit + 1;
+
+    let query = `SELECT event
 				FROM (SELECT event
 					  FROM report.events
 					  WHERE request_site = '${req.usersite}' -- straight defined filters
 						AND date_trunc('hour', date) <= '${period_max}'::timestamp ${timeTypeUTCshift}
 						AND date_trunc('hour', date) >= '${period_min}'::timestamp ${timeTypeUTCshift}`;
 
-  if (filersStr !== '') {
-    query += `
+    if (filersStr !== '') {
+      query += `
 		AND '{ ${filersStr} }' && signals_array -- filter for signals
 		`;
-  }
+    }
 
-  query += `
+    query += `
 	  AND (request_id LIKE '%${search}%' OR  request_device_id LIKE '%${search}%' OR events.request_email LIKE '%${search}%' OR request_ip  LIKE '%${search}%')
 	  `;
 
-  if (sortBy === 'date') {
-    query += `
+    if (sortBy === 'date') {
+      query += `
 		order by date
 		`;
-  }	else
-  if (sortBy === '-date') {
-    query += `
+    }	else
+    if (sortBy === '-date') {
+      query += `
 		order by date desc
 		`;
-  }
-
-  query += `) as temp OFFSET ${offset} LIMIT ${biggerThenLimit}`;
-
-  let response = [];
-  try {
-    response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-  } catch (err) {
-    res.status(500).send({
-      message:	err.message || 'Some SQL error occurred',
-    });
-    return;
-  }
-
-  let next = null;
-  if (response.length > limit) {
-    const params = ['search', 'filter', 'period_min', 'period_max', 'time_type', 'time_shift', 'offset', 'sort'];
-    next = '/dashboard/table-events/?';
-    let requests = '';
-    for (const par of params) {
-      let val = (par === 'offset') ? +req.query[par] + limit : req.query[par];
-      requests += `${(requests.length > 0 ? '&' : '') + par}=${val}`;
     }
 
-    next += requests;
-    response.slice(0, limit - 1);
-  }
+    query += `) as temp OFFSET ${offset} LIMIT ${biggerThenLimit}`;
 
-  const results = [];
-  for (const el of response) {
-    if (timeUTCshift !== 0) {
-      const arr = el.event.date.split(/[-\s:]/);
-
-      // new Date(year, month, date, hours, minutes, seconds
-      const dat1 = new Date(+arr[0], +arr[1] - 1, +arr[2], +arr[3], +arr[4], +arr[5]);
-      dat1.setTime(dat1.getTime() - dat1.getTimezoneOffset() * 60 * 1000);
-      const ts = dat1.getTime() + timeUTCshift * 60 * 1000;
-      const dat2 = new Date();
-      dat2.setTime(ts);
-
-      const newDate = dat2.toISOString().replace('T', ' ').split('.')[0];
-
-      el.event.date = newDate;
+    let response = [];
+    try {
+      response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    } catch (err) {
+      res.status(500).send({
+        message:	err.message || 'Some SQL error occurred',
+      });
+      return;
     }
 
-    results.push(el.event);
-  }
+    let next = null;
+    if (response.length > limit) {
+      const params = ['search', 'filter', 'period_min', 'period_max', 'time_type', 'time_shift', 'offset', 'sort'];
+      next = '/dashboard/table-events/?';
+      let requests = '';
+      for (const par of params) {
+        let val = (par === 'offset') ? +req.query[par] + limit : req.query[par];
+        requests += `${(requests.length > 0 ? '&' : '') + par}=${val}`;
+      }
 
-  res.json({ next, results });
+      next += requests;
+      response.slice(0, limit - 1);
+    }
+
+    const results = [];
+    for (const el of response) {
+      if (timeUTCshift !== 0) {
+        const arr = el.event.date.split(/[-\s:]/);
+
+        // new Date(year, month, date, hours, minutes, seconds
+        const dat1 = new Date(+arr[0], +arr[1] - 1, +arr[2], +arr[3], +arr[4], +arr[5] || 0);
+        dat1.setTime(dat1.getTime() - dat1.getTimezoneOffset() * 60 * 1000);
+        const ts = dat1.getTime() + timeUTCshift * 60 * 1000;
+
+        const dat2 = new Date();
+        dat2.setTime(ts);
+
+        const newDate = dat2.toISOString().replace('T', ' ').split('.')[0];
+
+        el.event.date = newDate;
+      }
+
+      results.push(el.event);
+    }
+    myCache.set(cacheKey, { next, results });
+    res.json({ next, results });
+  } else {
+    res.json({ next: value.next, results: value.results });
+  }
 };
 
 // get ONE event
@@ -435,7 +471,13 @@ exports.eventGetOne = async (req, res) => {
     return;
   }
 
-  const query = `SELECT request_id,
+  const cacheKey = `${req.username}|${req.originalUrl}`;
+
+  let value = myCache.get(cacheKey);
+  if (value === undefined) {
+    // handle miss!
+
+    const query = `SELECT request_id,
 				   date,
 				   json_agg(json_build_object(
 						   'Email_IP', emailip,
@@ -452,44 +494,47 @@ exports.eventGetOne = async (req, res) => {
 		WHERE request_id = '${id}'
 		and request_site = '${req.usersite}'`;
 
-  let response = [];
-  try {
-    response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-  } catch (err) {
-    res.status(500).send({
-      message:	err.message || 'Some SQL error occurred',
-    });
-    return;
-  }
-
-  let result = {};
-  if (response.length > 0) {
-    result = response[0];
-
-    // remap some keys
-    const processedKeys = ['Email_IP', 'Email', 'Ip', 'Device', 'Network'];
-
-    let processedKey = '';
-    for (processedKey of processedKeys) {
-      const remapped = [];
-      const arr = result.response[0][processedKey];
-
-      for (const key in arr) {
-        remapped.push({ name: key, value: arr[key] });
-      }
-      result.response[0][processedKey] = remapped;
+    let response = [];
+    try {
+      response = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+    } catch (err) {
+      res.status(500).send({
+        message:	err.message || 'Some SQL error occurred',
+      });
+      return;
     }
 
-    result.response = result.response[0];
+    let result = {};
+    if (response.length > 0) {
+      result = response[0];
 
-    const tempDate = result.date.toISOString().split('.');
-    result.date = tempDate[0];
+      // remap some keys
+      const processedKeys = ['Email_IP', 'Email', 'Ip', 'Device', 'Network'];
+
+      let processedKey = '';
+      for (processedKey of processedKeys) {
+        const remapped = [];
+        const arr = result.response[0][processedKey];
+
+        for (const key in arr) {
+          remapped.push({ name: key, value: arr[key] });
+        }
+        result.response[0][processedKey] = remapped;
+      }
+
+      result.response = result.response[0];
+
+      const tempDate = result.date.toISOString().split('.');
+      result.date = tempDate[0];
+    } else {
+      res.status(404).send({
+        message:	'wrong event id',
+      });
+      return;
+    }
+    myCache.set(cacheKey, result);
+    res.json(result);
   } else {
-    res.status(404).send({
-      message:	'wrong event id',
-    });
-    return;
+    res.json(value);
   }
-
-  res.json(result);
 };
