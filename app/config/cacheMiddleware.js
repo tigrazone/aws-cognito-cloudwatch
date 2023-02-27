@@ -10,8 +10,9 @@ module.exports.cache = duration => (req, res, next) => {
   if (cacheControl === 'no-cache') {
     console.log('*** cache Middleware. flush cache ***');
     myCache.flushAll();
-    console.log(myCache.getStats());
   }
+
+  console.log('*** Cache stats ***', myCache.getStats());
 
   const value = myCache.get(cacheKey);
   if (value === undefined) {

@@ -188,8 +188,9 @@ module.exports.authMiddleware = (req, res, next) => {
   if (cacheControl === 'no-cache') {
     console.log('*** authMiddleware. flush cache ***');
     myCache.flushAll();
-    console.log(myCache.getStats());
   }
+
+  console.log('*** Cache stats ***', myCache.getStats());
 
   // Check that the request contains a token
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
