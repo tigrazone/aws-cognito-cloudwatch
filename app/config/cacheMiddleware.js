@@ -6,8 +6,12 @@ module.exports.cache = duration => (req, res, next) => {
   const cacheKey = `_cache_${req.username || ''} | ${req.originalUrl || req.url}`;
 
   // header Cache-Control: no-cache   clean up cached data
-  const cacheControl = req.header['Cache-Control'] || '';
-  if (cacheControl === 'no-cache') myCache.flushAll();
+  const cacheControl = req.headers['cache-control'] || '';
+  if (cacheControl === 'no-cache') {
+    console.log('*** cache Middleware. flush cache ***');
+    myCache.flushAll();
+    console.log(myCache.getStats());
+  }
 
   const value = myCache.get(cacheKey);
   if (value === undefined) {

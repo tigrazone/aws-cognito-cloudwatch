@@ -184,8 +184,12 @@ const db = require('../models');
 
 module.exports.authMiddleware = (req, res, next) => {
   // header Cache-Control: no-cache   clean up cached data
-  const cacheControl = req.header['Cache-Control'] || '';
-  if (cacheControl === 'no-cache') myCache.flushAll();
+  const cacheControl = req.headers['cache-control'] || '';
+  if (cacheControl === 'no-cache') {
+    console.log('*** authMiddleware. flush cache ***');
+    myCache.flushAll();
+    console.log(myCache.getStats());
+  }
 
   // Check that the request contains a token
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
