@@ -151,7 +151,7 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiIzNWQ4MTI4Ni1jMTNmLTQ5ZTUtODNjOC1kMzUwM2I3Mjk0OWMiLCJldmVudF9pZCI6IjZlZmUwMmM3LTk2MDItNDE2MS05N2VmLTY1Y2IwNmU0YTIzNiIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2NzY2NDMyNDUsImV4cCI6MTY3NjY0Njg0NSwiaWF0IjoxNjc2NjQzMjQ1LCJqdGkiOiJlZTc2YjYwMy05ZDY1LTQ3NWMtYTlmYS0wNzVhYjJmMmZjYzIiLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.BYpiZUVpEdR9zfQt44VuJBkzjXLHiQanLHMAxJroPVv7PD5cDq9oG04Stm1XKQvaZ09U2J9cK_bsyJtJMvhtMeXnJAlzYTZgkzH1rNxOcLH3j-5X-PKHgFZRn6g1qn4t2IFCT7ZLqVVKariMbqcf5MKg0drFjV8klTtE7Q2AQtQpd23b0_RDBCOT7zthQag9n8sXQrxwVXWMoFAV_Siu1mKsuTWSpsEyipun9kY43nuykAF8mpkcGFx17d0dWw3qarGvlHiPwmAG__iCVWaFk97CCtOIQ3V-zRCt6M4l0U7Np06yWGwwV6YrzK73NdgnuCQWHIpHhwrOaRnv8qqvUQ",
+						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiIwZTg0MzExZi03ZmRlLTQxYjUtYjc4YS00Njc3Y2Q5MWU2NjgiLCJldmVudF9pZCI6ImUzNTU2NGYyLTU4N2UtNDJmZi1iM2U2LWE4MmVhMDE1ZGM0YyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2Nzc0OTE3MDgsImV4cCI6MTY3NzQ5NTMwOCwiaWF0IjoxNjc3NDkxNzA4LCJqdGkiOiIzMjY3M2RlZC05MTEyLTQ0OGUtYmM5Ni0xZmVlNGVhOWU2ZTciLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.WNfxZRs4CuhRWTFa90zRPaHoS0EnxGpGsOTtZEyWltpaTHQ-L_9I2_ZIXTT6THc3rWsR9ihVQpFoCUMLEC-Egj0LtnOxvXHGrIw8rBV_LQrZNxKSVhLp_WK0ILARCjDxaFUtP4WLEyBRVtusA1DsNzBsAq3mzz1T-moG4Pvap8VOqdILfIYtlM2C11Bd2ClIkGGtKx_jnSzSBSDk-QEmfruqn8EaQWUH8mHWua4AGBy9ugqViUqifouYMDkT0mQTm-_6g86ZVZfsbIrF6w_LBFAwaJpImk8_MUrp9uftYkmRo4PmrXRQMK_zwJVjxOCfOYgBiv7aVIrymnKyLJ5kJw",
 						"type": "text"
 					}
 				],
@@ -206,12 +206,12 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiI1ZGI4YjIzMS01OTUxLTQyNzktYjRjNi1iNmY1N2JmZDEwMDkiLCJldmVudF9pZCI6ImZhNzhiNzM1LTRmM2EtNDgyYy04MzIzLTFlZDU1MDQ3Y2VmYSIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2NzY2MzQ1OTksImV4cCI6MTY3NjYzNDg5OSwiaWF0IjoxNjc2NjM0NTk5LCJqdGkiOiJjYTNlNzE5ZC0yMDBkLTQ5YTctYWQ1MS03NzY0MzIzOWJiZTYiLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.hT1wC5Yf8q3HM3bQF0w7gFTDLvtCPgtAVPLwEQ3fFdgvGE3YvXzuOmRcPcjhUtwSCAN8I47KTgtLVBPiwMBnzF8p5EhPPf-cRrC0xyvADHaK0o4-BrHTl4D3KyUWqbSEo3kkNpJkHRgwtY5ytGxEF9tPjn0BWyHuxlyJQLExW0uK5x2JG30QHCDvnlgGv6mV0zj3lXlMSTRKn9YN8zOBZtNUewfVf2mh0bcnsJSuyMkmD-Nu89sq2UEpir-4_eAk6vvA8dGEtVhuKY8WU1RufM7prkbOLFfF5PdcYffG961PP0zOH17abyHvYq9lyJ0YmOqYzgsrOr9wCba4SlYECA",
+						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiJlN2U5NTFlYi02ZDE1LTQ0MzAtYjUwMC02MDQxMGM4N2EzNTkiLCJldmVudF9pZCI6IjVkMDdlMDg3LTJiNmEtNGMyYi04YjFiLTgyYjRjOGUwZGQ3MyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2Nzc0MTU3MTEsImV4cCI6MTY3NzQxOTMxMSwiaWF0IjoxNjc3NDE1NzExLCJqdGkiOiI0MTVhY2Y1Yi0yM2NmLTQxOWUtOWJkZC0wZTAyMTBmYTM5NmYiLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.I2MILtsNioEmanYbWKBqPb58dtk_v-6IdONCEPtPWV2QFLkncdEFYx7H_gIWuYeUvu_cH9sW64q8-1pB4eddou7ekkcuCYh0W16ORMsmjBVAnWNjllLlIi5-raxB_W40_zG87wxqwnFMBOFQVA9MoJGk20tPmQFRAbc-S_AdQortlmPtCKffTdV_3iC_utgPw5eLOz64Q4_rx-bfQr0CbMDRK72KRXtbK9pSFZOfha7Qo0BYmty6QFgpUzm0znGV-BLsJpEjAS6DfRKwanrkfmht_HtLo0OMVISSQWhb4jOtUq18YKj3ImzlBS9zLTtsIayKJHjxrHIv1l0a8qDaDg",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:3000/api/dashboard/charts/?time_shift=60&time_type=local&period_min=2021-10-16+00:00&period_max=2021-10-16+23:59",
+					"raw": "http://localhost:3000/api/dashboard/charts/?time_shift=60&time_type=local&period_min=2023-02-10+00:00&period_max=2023-10-16+23:59",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -234,11 +234,11 @@
 						},
 						{
 							"key": "period_min",
-							"value": "2021-10-16+00:00"
+							"value": "2023-02-10+00:00"
 						},
 						{
 							"key": "period_max",
-							"value": "2021-10-16+23:59"
+							"value": "2023-10-16+23:59"
 						}
 					]
 				}
@@ -252,12 +252,12 @@
 				"header": [
 					{
 						"key": "Authorization",
-						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiIzNWQ4MTI4Ni1jMTNmLTQ5ZTUtODNjOC1kMzUwM2I3Mjk0OWMiLCJldmVudF9pZCI6IjZlZmUwMmM3LTk2MDItNDE2MS05N2VmLTY1Y2IwNmU0YTIzNiIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2NzY2NDMyNDUsImV4cCI6MTY3NjY0Njg0NSwiaWF0IjoxNjc2NjQzMjQ1LCJqdGkiOiJlZTc2YjYwMy05ZDY1LTQ3NWMtYTlmYS0wNzVhYjJmMmZjYzIiLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.BYpiZUVpEdR9zfQt44VuJBkzjXLHiQanLHMAxJroPVv7PD5cDq9oG04Stm1XKQvaZ09U2J9cK_bsyJtJMvhtMeXnJAlzYTZgkzH1rNxOcLH3j-5X-PKHgFZRn6g1qn4t2IFCT7ZLqVVKariMbqcf5MKg0drFjV8klTtE7Q2AQtQpd23b0_RDBCOT7zthQag9n8sXQrxwVXWMoFAV_Siu1mKsuTWSpsEyipun9kY43nuykAF8mpkcGFx17d0dWw3qarGvlHiPwmAG__iCVWaFk97CCtOIQ3V-zRCt6M4l0U7Np06yWGwwV6YrzK73NdgnuCQWHIpHhwrOaRnv8qqvUQ",
+						"value": "Bearer eyJraWQiOiJCc3FvMnlsUWdwVlwvOVBLZnlwSVBsZ3ptbWNRZm9PbmRobWh5N1JscVhmdz0iLCJhbGciOiJSUzI1NiJ9.eyJzdWIiOiJmNTA2MjE1Ni1hMWVlLTRiYTAtODRjNS04M2MxYjJlMDNmMDIiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0yLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMl9na0E5Zm12eVgiLCJjbGllbnRfaWQiOiIyOTAxczhzZ2M5NGk2cmUwcTQ1cXEzOG8xMSIsIm9yaWdpbl9qdGkiOiIwZTg0MzExZi03ZmRlLTQxYjUtYjc4YS00Njc3Y2Q5MWU2NjgiLCJldmVudF9pZCI6ImUzNTU2NGYyLTU4N2UtNDJmZi1iM2U2LWE4MmVhMDE1ZGM0YyIsInRva2VuX3VzZSI6ImFjY2VzcyIsInNjb3BlIjoiYXdzLmNvZ25pdG8uc2lnbmluLnVzZXIuYWRtaW4iLCJhdXRoX3RpbWUiOjE2Nzc0OTE3MDgsImV4cCI6MTY3NzQ5NTMwOCwiaWF0IjoxNjc3NDkxNzA4LCJqdGkiOiIzMjY3M2RlZC05MTEyLTQ0OGUtYmM5Ni0xZmVlNGVhOWU2ZTciLCJ1c2VybmFtZSI6ImdyZWVuX2VsIn0.WNfxZRs4CuhRWTFa90zRPaHoS0EnxGpGsOTtZEyWltpaTHQ-L_9I2_ZIXTT6THc3rWsR9ihVQpFoCUMLEC-Egj0LtnOxvXHGrIw8rBV_LQrZNxKSVhLp_WK0ILARCjDxaFUtP4WLEyBRVtusA1DsNzBsAq3mzz1T-moG4Pvap8VOqdILfIYtlM2C11Bd2ClIkGGtKx_jnSzSBSDk-QEmfruqn8EaQWUH8mHWua4AGBy9ugqViUqifouYMDkT0mQTm-_6g86ZVZfsbIrF6w_LBFAwaJpImk8_MUrp9uftYkmRo4PmrXRQMK_zwJVjxOCfOYgBiv7aVIrymnKyLJ5kJw",
 						"type": "text"
 					}
 				],
 				"url": {
-					"raw": "http://localhost:3000/api/dashboard/table-events/?search=@&filter=37,%2024&period_min=2021-10-16%2017:00&period_max=2021-10-18%2017:00&time_type=local&time_shift=60",
+					"raw": "http://localhost:3000/api/dashboard/table-events/?search=@&period_min=2023-01-01 00:00&period_max=2023-10-16 23:59&time_type=local&sort=date",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -276,15 +276,16 @@
 						},
 						{
 							"key": "filter",
-							"value": "37,%2024"
+							"value": "37,%2024",
+							"disabled": true
 						},
 						{
 							"key": "period_min",
-							"value": "2021-10-16%2017:00"
+							"value": "2023-01-01 00:00"
 						},
 						{
 							"key": "period_max",
-							"value": "2021-10-18%2017:00"
+							"value": "2023-10-16 23:59"
 						},
 						{
 							"key": "time_type",
@@ -292,7 +293,12 @@
 						},
 						{
 							"key": "time_shift",
-							"value": "60"
+							"value": "-90",
+							"disabled": true
+						},
+						{
+							"key": "sort",
+							"value": "date"
 						}
 					]
 				}
