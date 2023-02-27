@@ -16,6 +16,10 @@ const jwt = require('jsonwebtoken');
 
 const CognitoExpress = require('cognito-express');
 
+const NodeCache = require('node-cache');
+
+const myCache = new NodeCache({ stdTTL: 3600, checkperiod: 3600 });
+
 // Setup CognitoExpress
 const cognitoExpress = new CognitoExpress({
   region: process.env.AWS_COGNITO_REGION,
@@ -176,7 +180,7 @@ module.exports.signOut = signOut;
 const { QueryTypes } = require('sequelize');
 const db = require('../models');
 
-module.exports.authMiddleware = function authMiddleware(req, res, next) {
+module.exports.authMiddleware = (req, res, next) => {
   // Check that the request contains a token
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
     // Validate the token
@@ -194,20 +198,30 @@ module.exports.authMiddleware = function authMiddleware(req, res, next) {
           req.username = decodedJwt.payload.username || '';
           req.usersite = '';
           if (req.username !== '') {
-            const query = `SELECT site FROM report.username_site WHERE username = '${req.username}'`;
+            const cacheKey = `usersite.${req.username}`;
+
+            const value = myCache.get(cacheKey);
             let result = [];
-            try {
-              result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
-            } catch (err) {
-              res.status(500).send({
-                message: err.message || 'Some SQL error occurred',
-              });
-              return;
-            }
-            if (result.length === 1) {
-              req.usersite = result[0].site;
+            if (value === undefined) {
+              // handle miss!
+              const query = `SELECT site FROM report.username_site WHERE username = '${req.username}'`;
+              try {
+                result = await db.sequelize.query(query, { type: QueryTypes.SELECT });
+              } catch (err) {
+                res.status(500).send({
+                  message: err.message || 'Some SQL error occurred',
+                });
+                return;
+              }
+              if (result.length === 1) {
+                req.usersite = result[0].site;
+                myCache.set(cacheKey, req.usersite);
+              } else {
+                res.status(401).json({ message: 'Invalid token. No user site data in DB' });
+              }
             } else {
-              res.status(401).json({ message: 'Invalid token. No user site data in DB' });
+              console.log('*** usersite taken from CACHE ***');
+              req.usersite = value;
             }
           }
         }
