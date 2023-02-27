@@ -5,6 +5,10 @@ const myCache = new NodeCache();
 module.exports.cache = duration => (req, res, next) => {
   const cacheKey = `_cache_${req.username || ''} | ${req.originalUrl || req.url}`;
 
+  // header Cache-Control: no-cache   clean up cached data
+  const cacheControl = req.header['Cache-Control'] || '';
+  if (cacheControl === 'no-cache') myCache.flushAll();
+
   const value = myCache.get(cacheKey);
   if (value === undefined) {
     res.sendResponse = res.send;

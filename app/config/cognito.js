@@ -183,6 +183,10 @@ const { QueryTypes } = require('sequelize');
 const db = require('../models');
 
 module.exports.authMiddleware = (req, res, next) => {
+  // header Cache-Control: no-cache   clean up cached data
+  const cacheControl = req.header['Cache-Control'] || '';
+  if (cacheControl === 'no-cache') myCache.flushAll();
+
   // Check that the request contains a token
   if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
     // Validate the token
