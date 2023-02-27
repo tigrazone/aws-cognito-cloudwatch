@@ -18,7 +18,9 @@ const CognitoExpress = require('cognito-express');
 
 const NodeCache = require('node-cache');
 
-const myCache = new NodeCache({ stdTTL: 3600, checkperiod: 3600 });
+const myCache = new NodeCache();
+
+const CACHE_DURATION = 15 * 60; // 15 min
 
 // Setup CognitoExpress
 const cognitoExpress = new CognitoExpress({
@@ -215,7 +217,7 @@ module.exports.authMiddleware = (req, res, next) => {
               }
               if (result.length === 1) {
                 req.usersite = result[0].site;
-                myCache.set(cacheKey, req.usersite);
+                myCache.set(cacheKey, req.usersite, CACHE_DURATION);
               } else {
                 res.status(401).json({ message: 'Invalid token. No user site data in DB' });
               }
