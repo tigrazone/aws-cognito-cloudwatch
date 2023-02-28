@@ -2,7 +2,7 @@
 /* eslint-disable max-len */
 /* eslint-disable no-param-reassign */
 
-const compression = require('compression')
+const compression = require('compression');
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -15,7 +15,8 @@ const gracefulShutdown = require('./app/utils/graceful-shutdown');
 const app = express();
 
 // compressed content
-// app.use(compression({ filter: shouldCompress }))
+// eslint-disable-next-line no-use-before-define
+app.use(compression({ filter: shouldCompress }));
 
 // disable `X-Powered-By` header that reveals information about the server
 app.disable('x-powered-by');
@@ -31,14 +32,14 @@ app.use(express.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 
-function shouldCompress (req, res) {
+function shouldCompress(req, res) {
   if (req.headers['x-no-compression']) {
     // don't compress responses with this request header
-    return false
+    return false;
   }
 
   // fallback to standard filter function
-  return compression.filter(req, res)
+  return compression.filter(req, res);
 }
 
 const db = require('./app/models');
